@@ -1,0 +1,15 @@
+.investment {
+  display: flex;
+  flex-direction: column;
+}
+.investment_row {
+  display: flex;
+  padding: 0.2rem;
+  border: 1px solid wheat;
+}
+.investment_column:nth-child(1) {
+  flex: 2;
+}
+.investment_column {
+  flex: 1;
+}
