@@ -3,16 +3,7 @@ import React from "react";
 
 import styles from "../styles/InvestmentTracker.module.css";
 
-function InvestmentTracker({
-  entries,
-}: {
-  entries: {
-    details: Record<
-      string,
-      { investment: string; profit: string; status: string }
-    >;
-  };
-}) {
+function InvestmentTracker({ entries }: { entries: InvestmentTrackerStats }) {
   return (
     <div>
       <h1>Hi there! Welcome to Investment Tracker</h1>
@@ -43,11 +34,39 @@ function InvestmentTracker({
 
 export default InvestmentTracker;
 
+type InvestmentTrackerData = {
+  data: Array<
+    | {
+        to: string;
+        from: never;
+        type: InvestmentType;
+        amount: string;
+      }
+    | {
+        to: never;
+        from: string;
+        type: InvestmentType;
+        amount: string;
+      }
+  >;
+};
+
+type InvestmentType = "PROFIT RETURN" | "INVESTMENT";
+type InvestmentEntry = {
+  profit: number;
+  investment: number;
+  status?: string;
+};
+
+type InvestmentTrackerStats = {
+  details: Record<string, InvestmentEntry>;
+  total: InvestmentEntry;
+};
 export const getStaticProps = async () => {
   const res = await fetch(
     "https://raw.githubusercontent.com/mostafa-K-raihan/investement-tracker/main/transaction-database.json"
   );
-  const { data } = await res.json();
+  const { data } = (await res.json()) as InvestmentTrackerData;
   const stats = data.reduce((acc, next) => {
     const entity = next.to || next.from;
 
@@ -88,7 +107,7 @@ export const getStaticProps = async () => {
         : `❌ ${totalDiff}`;
 
     return acc;
-  }, {});
+  }, {} as InvestmentTrackerStats);
   return {
     props: {
       entries: stats,
